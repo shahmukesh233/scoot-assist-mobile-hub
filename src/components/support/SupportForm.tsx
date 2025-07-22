@@ -81,9 +81,9 @@ const SupportForm = ({ initialQuestion, initialCategory, onBack, onSuccess }: Su
     setIsSubmitting(true);
     
     try {
-      // For demo purposes, we'll use a mock customer ID
+      // Generate a proper UUID for demo purposes
       // In a real app, this would come from the authenticated user
-      const mockCustomerId = 'customer-demo-123';
+      const mockCustomerId = crypto.randomUUID();
       
       let attachmentUrl = null;
       
