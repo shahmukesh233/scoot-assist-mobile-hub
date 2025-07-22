@@ -50,6 +50,7 @@ export type Database = {
       support_tickets: {
         Row: {
           assigned_admin_id: string | null
+          attachment_url: string | null
           category: string
           created_at: string
           customer_id: string
@@ -63,6 +64,7 @@ export type Database = {
         }
         Insert: {
           assigned_admin_id?: string | null
+          attachment_url?: string | null
           category?: string
           created_at?: string
           customer_id: string
@@ -76,6 +78,7 @@ export type Database = {
         }
         Update: {
           assigned_admin_id?: string | null
+          attachment_url?: string | null
           category?: string
           created_at?: string
           customer_id?: string

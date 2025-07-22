@@ -58,8 +58,12 @@ const Dashboard = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Button variant="electric" className="w-full">
-                View Tickets
+              <Button 
+                variant="electric" 
+                className="w-full"
+                onClick={() => window.location.href = '/support'}
+              >
+                Create Support Ticket
               </Button>
             </CardContent>
           </Card>
