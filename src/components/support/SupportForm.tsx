@@ -194,10 +194,11 @@ const SupportForm = ({ initialQuestion, initialCategory, onBack, onSuccess }: Su
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="battery">Battery Issues</SelectItem>
-                            <SelectItem value="mechanical">Mechanical Problems</SelectItem>
-                            <SelectItem value="safety">Safety Concerns</SelectItem>
                             <SelectItem value="general">General Questions</SelectItem>
+                            <SelectItem value="technical">Technical Issues</SelectItem>
+                            <SelectItem value="billing">Billing & Payment</SelectItem>
+                            <SelectItem value="warranty">Warranty Claims</SelectItem>
+                            <SelectItem value="parts">Parts & Accessories</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
