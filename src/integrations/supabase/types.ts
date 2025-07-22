@@ -47,6 +47,42 @@ export type Database = {
         }
         Relationships: []
       }
+      questions: {
+        Row: {
+          category_description: string
+          category_icon: string
+          category_id: string
+          category_title: string
+          created_at: string
+          created_by: string | null
+          id: string
+          question_text: string
+          updated_at: string
+        }
+        Insert: {
+          category_description: string
+          category_icon: string
+          category_id: string
+          category_title: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          question_text: string
+          updated_at?: string
+        }
+        Update: {
+          category_description?: string
+          category_icon?: string
+          category_id?: string
+          category_title?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          question_text?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       support_tickets: {
         Row: {
           assigned_admin_id: string | null

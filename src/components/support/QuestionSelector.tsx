@@ -1,57 +1,43 @@
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { MessageSquare, Zap, Wrench, Shield, HelpCircle } from 'lucide-react';
+import { MessageSquare, Zap, Wrench, Shield, HelpCircle, Settings, Package, Circle, Square, Triangle, Star, Hexagon, Phone, Mail } from 'lucide-react';
+import { supabase } from "@/integrations/supabase/client";
 
-const predefinedQuestions = [
-  {
-    id: 'battery',
-    icon: Zap,
-    title: 'Battery Issues',
-    description: 'Battery not charging, low range, or power problems',
-    questions: [
-      'My scooter battery is not charging',
-      'How can I improve my scooter battery life?',
-      'Why does my battery drain so quickly?',
-      'What is the expected battery range?'
-    ]
-  },
-  {
-    id: 'mechanical',
-    icon: Wrench,
-    title: 'Mechanical Problems',
-    description: 'Brakes, wheels, steering, or motor issues',
-    questions: [
-      'My brakes are making strange noises',
-      'The scooter is not accelerating properly',
-      'How do I adjust the brake tension?',
-      'The wheels are wobbling while riding'
-    ]
-  },
-  {
-    id: 'safety',
-    icon: Shield,
-    title: 'Safety Concerns',
-    description: 'Safety features, helmet recommendations, or accident reports',
-    questions: [
-      'What safety gear do you recommend?',
-      'How do I report a safety issue?',
-      'My scooter suddenly stopped working while riding',
-      'Are there age restrictions for using the scooter?'
-    ]
-  },
-  {
-    id: 'general',
-    icon: HelpCircle,
-    title: 'General Questions',
-    description: 'Warranty, maintenance, or usage questions',
-    questions: [
-      'How do I maintain my electric scooter?',
-      'What is covered under warranty?',
-      'How often should I service my scooter?',
-      'Can I ride in the rain?'
-    ]
-  }
-];
+// Icon mapping for dynamic icons
+const iconMap: Record<string, any> = {
+  Circle,
+  Square,
+  Triangle,
+  Star,
+  Hexagon,
+  Wrench,
+  Settings,
+  Shield,
+  Package,
+  HelpCircle,
+  Phone,
+  Mail,
+  MessageSquare,
+  Zap
+};
+
+interface Question {
+  id: string;
+  category_id: string;
+  category_title: string;
+  category_description: string;
+  category_icon: string;
+  question_text: string;
+}
+
+interface QuestionCategory {
+  id: string;
+  icon: any;
+  title: string;
+  description: string;
+  questions: string[];
+}
 
 interface QuestionSelectorProps {
   onSelectQuestion: (question: string, category: string) => void;
@@ -59,6 +45,58 @@ interface QuestionSelectorProps {
 }
 
 const QuestionSelector = ({ onSelectQuestion, onCustomQuestion }: QuestionSelectorProps) => {
+  const [questions, setQuestions] = useState<Question[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchQuestions();
+  }, []);
+
+  const fetchQuestions = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("questions")
+        .select("*")
+        .order("category_id", { ascending: true })
+        .order("created_at", { ascending: true });
+
+      if (error) throw error;
+      setQuestions(data || []);
+    } catch (error) {
+      console.error("Error fetching questions:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Group questions by category
+  const groupedQuestions = questions.reduce((acc, question) => {
+    if (!acc[question.category_id]) {
+      acc[question.category_id] = {
+        id: question.category_id,
+        icon: iconMap[question.category_icon] || HelpCircle,
+        title: question.category_title,
+        description: question.category_description,
+        questions: []
+      };
+    }
+    acc[question.category_id].questions.push(question.question_text);
+    return acc;
+  }, {} as Record<string, QuestionCategory>);
+
+  const predefinedQuestions = Object.values(groupedQuestions);
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div className="text-center mb-8">
+          <h2 className="text-2xl font-bold mb-2">How can we help you today?</h2>
+          <p className="text-muted-foreground">Loading questions...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div className="text-center mb-8">
