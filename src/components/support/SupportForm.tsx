@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -43,6 +43,18 @@ const SupportForm = ({ initialQuestion, initialCategory, onBack, onSuccess }: Su
       priority: 'medium',
     },
   });
+
+  // Check for URL parameters to pre-fill inquiry details
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const inquiry = urlParams.get('inquiry');
+    if (inquiry) {
+      const decodedInquiry = decodeURIComponent(inquiry);
+      form.setValue('description', decodedInquiry);
+      form.setValue('title', 'Order Delivery Inquiry');
+      form.setValue('category', 'general');
+    }
+  }, [form]);
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];

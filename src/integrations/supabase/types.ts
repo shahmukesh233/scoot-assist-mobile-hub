@@ -14,6 +14,66 @@ export type Database = {
   }
   public: {
     Tables: {
+      orders: {
+        Row: {
+          created_at: string
+          customer_id: string
+          delivery_address: string
+          delivery_city: string
+          delivery_phone: string
+          delivery_postal_code: string
+          estimated_delivery_date: string | null
+          id: string
+          notes: string | null
+          order_number: string
+          quantity: number
+          scooter_model: Database["public"]["Enums"]["scooter_model"]
+          status: Database["public"]["Enums"]["order_status"]
+          total_amount: number
+          tracking_number: string | null
+          unit_price: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          customer_id: string
+          delivery_address: string
+          delivery_city: string
+          delivery_phone: string
+          delivery_postal_code: string
+          estimated_delivery_date?: string | null
+          id?: string
+          notes?: string | null
+          order_number: string
+          quantity?: number
+          scooter_model: Database["public"]["Enums"]["scooter_model"]
+          status?: Database["public"]["Enums"]["order_status"]
+          total_amount: number
+          tracking_number?: string | null
+          unit_price: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          customer_id?: string
+          delivery_address?: string
+          delivery_city?: string
+          delivery_phone?: string
+          delivery_postal_code?: string
+          estimated_delivery_date?: string | null
+          id?: string
+          notes?: string | null
+          order_number?: string
+          quantity?: number
+          scooter_model?: Database["public"]["Enums"]["scooter_model"]
+          status?: Database["public"]["Enums"]["order_status"]
+          total_amount?: number
+          tracking_number?: string | null
+          unit_price?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -133,12 +193,24 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      generate_order_number: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
       get_current_user_role: {
         Args: Record<PropertyKey, never>
         Returns: string
       }
     }
     Enums: {
+      order_status:
+        | "pending"
+        | "confirmed"
+        | "processing"
+        | "shipped"
+        | "delivered"
+        | "cancelled"
+      scooter_model: "ms_classic" | "ms_sport" | "ms_electric" | "ms_premium"
       user_role: "customer" | "admin"
     }
     CompositeTypes: {
@@ -267,6 +339,15 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      order_status: [
+        "pending",
+        "confirmed",
+        "processing",
+        "shipped",
+        "delivered",
+        "cancelled",
+      ],
+      scooter_model: ["ms_classic", "ms_sport", "ms_electric", "ms_premium"],
       user_role: ["customer", "admin"],
     },
   },

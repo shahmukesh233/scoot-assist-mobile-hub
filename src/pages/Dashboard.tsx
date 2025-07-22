@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { User, Settings, LogOut } from 'lucide-react';
+import { User, Settings, LogOut, Package, ShoppingCart } from 'lucide-react';
 
 const Dashboard = () => {
   const handleLogout = () => {
@@ -29,7 +29,7 @@ const Dashboard = () => {
         </div>
 
         {/* Dashboard Content */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <Card className="shadow-soft border-0">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -48,6 +48,36 @@ const Dashboard = () => {
               >
                 View Profile
               </Button>
+            </CardContent>
+          </Card>
+
+          <Card className="shadow-soft border-0">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Package className="w-5 h-5 text-primary" />
+                Orders
+              </CardTitle>
+              <CardDescription>
+                View and track your scooter orders
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                <Button 
+                  variant="electric" 
+                  className="w-full"
+                  onClick={() => window.location.href = '/orders/new'}
+                >
+                  Place New Order
+                </Button>
+                <Button 
+                  variant="outline" 
+                  className="w-full"
+                  onClick={() => window.location.href = '/orders'}
+                >
+                  View My Orders
+                </Button>
+              </div>
             </CardContent>
           </Card>
 
