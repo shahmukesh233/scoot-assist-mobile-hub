@@ -26,7 +26,8 @@ export default {
 				foreground: 'hsl(var(--foreground))',
 				primary: {
 					DEFAULT: 'hsl(var(--primary))',
-					foreground: 'hsl(var(--primary-foreground))'
+					foreground: 'hsl(var(--primary-foreground))',
+					glow: 'hsl(var(--primary-glow))'
 				},
 				secondary: {
 					DEFAULT: 'hsl(var(--secondary))',
@@ -61,7 +62,21 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
-				}
+				},
+				'electric-blue': 'hsl(var(--electric-blue))',
+				'electric-green': 'hsl(var(--electric-green))',
+				'tech-gray': 'hsl(var(--tech-gray))',
+				'light-gray': 'hsl(var(--light-gray))'
+			},
+			backgroundImage: {
+				'gradient-primary': 'var(--gradient-primary)',
+				'gradient-electric': 'var(--gradient-electric)',
+				'gradient-subtle': 'var(--gradient-subtle)'
+			},
+			boxShadow: {
+				'electric': 'var(--shadow-electric)',
+				'glow': 'var(--shadow-glow)',
+				'soft': 'var(--shadow-soft)'
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
