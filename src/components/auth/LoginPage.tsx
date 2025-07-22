@@ -20,8 +20,14 @@ const LoginPage = () => {
     if (phoneNumber.length >= 10) {
       setIsLoading(true);
       try {
-        // Simulate OTP sending
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        // Use Supabase's phone authentication
+        const { error } = await supabase.auth.signInWithOtp({
+          phone: `+91${phoneNumber}`,
+        });
+
+        if (error) {
+          throw error;
+        }
         
         toast({
           title: "OTP Sent",
@@ -30,7 +36,7 @@ const LoginPage = () => {
         setStep('otp');
       } catch (error) {
         toast({
-          title: "Error",
+          title: "Error", 
           description: "Failed to send OTP. Please try again.",
           variant: "destructive",
         });
@@ -60,19 +66,29 @@ const LoginPage = () => {
     if (otpString.length === 6) {
       setIsLoading(true);
       try {
-        // Accept any 6-digit OTP for testing purposes
-        await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API delay
-        
-        toast({
-          title: "Success",
-          description: "Login successful!",
+        // Use Supabase's phone authentication
+        const { data, error } = await supabase.auth.verifyOtp({
+          phone: `+91${phoneNumber}`,
+          token: otpString,
+          type: 'sms'
         });
-        // Redirect to dashboard
-        window.location.href = '/dashboard';
+
+        if (error) {
+          throw error;
+        }
+
+        if (data.user) {
+          toast({
+            title: "Success",
+            description: "Login successful!",
+          });
+          // Redirect to dashboard
+          window.location.href = '/dashboard';
+        }
       } catch (error) {
         toast({
           title: "Error",
-          description: "Failed to verify OTP. Please try again.",
+          description: "Invalid OTP. Please try again.",
           variant: "destructive",
         });
       } finally {
@@ -212,8 +228,14 @@ const LoginPage = () => {
                     onClick={async () => {
                       setIsLoading(true);
                       try {
-                        // Simulate OTP resending
-                        await new Promise(resolve => setTimeout(resolve, 1000));
+                        // Resend OTP using Supabase
+                        const { error } = await supabase.auth.signInWithOtp({
+                          phone: `+91${phoneNumber}`,
+                        });
+
+                        if (error) {
+                          throw error;
+                        }
                         
                         toast({
                           title: "OTP Resent",
