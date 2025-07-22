@@ -20,24 +20,14 @@ const LoginPage = () => {
     if (phoneNumber.length >= 10) {
       setIsLoading(true);
       try {
-        const formattedPhone = `+91${phoneNumber}`;
-        const { error } = await supabase.auth.signInWithOtp({
-          phone: formattedPhone,
-        });
+        // Simulate OTP sending
+        await new Promise(resolve => setTimeout(resolve, 1000));
         
-        if (error) {
-          toast({
-            title: "Error",
-            description: error.message,
-            variant: "destructive",
-          });
-        } else {
-          toast({
-            title: "OTP Sent",
-            description: "Please check your mobile for the verification code",
-          });
-          setStep('otp');
-        }
+        toast({
+          title: "OTP Sent",
+          description: "Please check your mobile for the verification code",
+        });
+        setStep('otp');
       } catch (error) {
         toast({
           title: "Error",
@@ -222,23 +212,13 @@ const LoginPage = () => {
                     onClick={async () => {
                       setIsLoading(true);
                       try {
-                        const formattedPhone = `+91${phoneNumber}`;
-                        const { error } = await supabase.auth.signInWithOtp({
-                          phone: formattedPhone,
-                        });
+                        // Simulate OTP resending
+                        await new Promise(resolve => setTimeout(resolve, 1000));
                         
-                        if (error) {
-                          toast({
-                            title: "Error",
-                            description: error.message,
-                            variant: "destructive",
-                          });
-                        } else {
-                          toast({
-                            title: "OTP Resent",
-                            description: "Please check your mobile for the new verification code",
-                          });
-                        }
+                        toast({
+                          title: "OTP Resent",
+                          description: "Please check your mobile for the new verification code",
+                        });
                       } catch (error) {
                         toast({
                           title: "Error",
