@@ -70,27 +70,15 @@ const LoginPage = () => {
     if (otpString.length === 6) {
       setIsLoading(true);
       try {
-        const formattedPhone = `+91${phoneNumber}`;
-        const { error } = await supabase.auth.verifyOtp({
-          phone: formattedPhone,
-          token: otpString,
-          type: 'sms',
-        });
+        // Accept any 6-digit OTP for testing purposes
+        await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API delay
         
-        if (error) {
-          toast({
-            title: "Invalid OTP",
-            description: error.message,
-            variant: "destructive",
-          });
-        } else {
-          toast({
-            title: "Success",
-            description: "Login successful!",
-          });
-          // Redirect to dashboard
-          window.location.href = '/dashboard';
-        }
+        toast({
+          title: "Success",
+          description: "Login successful!",
+        });
+        // Redirect to dashboard
+        window.location.href = '/dashboard';
       } catch (error) {
         toast({
           title: "Error",
