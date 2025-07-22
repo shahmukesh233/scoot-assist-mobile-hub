@@ -58,13 +58,22 @@ const Dashboard = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Button 
-                variant="electric" 
-                className="w-full"
-                onClick={() => window.location.href = '/support'}
-              >
-                Create Support Ticket
-              </Button>
+              <div className="space-y-2">
+                <Button 
+                  variant="electric" 
+                  className="w-full"
+                  onClick={() => window.location.href = '/support'}
+                >
+                  Create Support Ticket
+                </Button>
+                <Button 
+                  variant="outline" 
+                  className="w-full"
+                  onClick={() => window.location.href = '/tickets'}
+                >
+                  View My Tickets
+                </Button>
+              </div>
             </CardContent>
           </Card>
 
