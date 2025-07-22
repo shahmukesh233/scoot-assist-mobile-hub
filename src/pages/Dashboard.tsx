@@ -41,7 +41,11 @@ const Dashboard = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Button variant="electric" className="w-full">
+              <Button 
+                variant="electric" 
+                className="w-full"
+                onClick={() => window.location.href = '/profile'}
+              >
                 View Profile
               </Button>
             </CardContent>
