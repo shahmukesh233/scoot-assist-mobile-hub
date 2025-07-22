@@ -4,6 +4,8 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Smartphone, Zap } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 import scooterLogo from '@/assets/scooter-logo.png';
 
 const LoginPage = () => {
@@ -11,16 +13,40 @@ const LoginPage = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
 
-  const handlePhoneSubmit = (e: React.FormEvent) => {
+  const handlePhoneSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (phoneNumber.length >= 10) {
       setIsLoading(true);
-      // Simulate API call
-      setTimeout(() => {
+      try {
+        const formattedPhone = `+91${phoneNumber}`;
+        const { error } = await supabase.auth.signInWithOtp({
+          phone: formattedPhone,
+        });
+        
+        if (error) {
+          toast({
+            title: "Error",
+            description: error.message,
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "OTP Sent",
+            description: "Please check your mobile for the verification code",
+          });
+          setStep('otp');
+        }
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "Failed to send OTP. Please try again.",
+          variant: "destructive",
+        });
+      } finally {
         setIsLoading(false);
-        setStep('otp');
-      }, 1500);
+      }
     }
   };
 
@@ -38,16 +64,42 @@ const LoginPage = () => {
     }
   };
 
-  const handleOtpSubmit = (e: React.FormEvent) => {
+  const handleOtpSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const otpString = otp.join('');
     if (otpString.length === 6) {
       setIsLoading(true);
-      // This would normally authenticate with Supabase
-      setTimeout(() => {
+      try {
+        const formattedPhone = `+91${phoneNumber}`;
+        const { error } = await supabase.auth.verifyOtp({
+          phone: formattedPhone,
+          token: otpString,
+          type: 'sms',
+        });
+        
+        if (error) {
+          toast({
+            title: "Invalid OTP",
+            description: error.message,
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "Success",
+            description: "Login successful!",
+          });
+          // Redirect to dashboard
+          window.location.href = '/dashboard';
+        }
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "Failed to verify OTP. Please try again.",
+          variant: "destructive",
+        });
+      } finally {
         setIsLoading(false);
-        // Redirect to dashboard
-      }, 1500);
+      }
     }
   };
 
@@ -176,7 +228,40 @@ const LoginPage = () => {
                 </div>
                 
                 <div className="text-center">
-                  <Button variant="link" className="text-sm text-muted-foreground">
+                  <Button 
+                    variant="link" 
+                    className="text-sm text-muted-foreground"
+                    onClick={async () => {
+                      setIsLoading(true);
+                      try {
+                        const formattedPhone = `+91${phoneNumber}`;
+                        const { error } = await supabase.auth.signInWithOtp({
+                          phone: formattedPhone,
+                        });
+                        
+                        if (error) {
+                          toast({
+                            title: "Error",
+                            description: error.message,
+                            variant: "destructive",
+                          });
+                        } else {
+                          toast({
+                            title: "OTP Resent",
+                            description: "Please check your mobile for the new verification code",
+                          });
+                        }
+                      } catch (error) {
+                        toast({
+                          title: "Error",
+                          description: "Failed to resend OTP. Please try again.",
+                          variant: "destructive",
+                        });
+                      } finally {
+                        setIsLoading(false);
+                      }
+                    }}
+                  >
                     Didn't receive? Resend OTP
                   </Button>
                 </div>
