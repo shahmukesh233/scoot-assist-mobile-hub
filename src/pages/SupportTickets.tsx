@@ -31,9 +31,16 @@ const SupportTickets = () => {
 
   const fetchTickets = async () => {
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        window.location.href = '/';
+        return;
+      }
+
       const { data, error } = await supabase
         .from('support_tickets')
         .select('*')
+        .eq('customer_id', user.id)
         .order('created_at', { ascending: false });
 
       if (error) throw error;

@@ -61,11 +61,13 @@ const Profile = () => {
 
       const { error } = await supabase
         .from('profiles')
-        .update({
+        .upsert({
+          user_id: user.id,
           display_name: displayName,
           mobile_number: mobileNumber,
-        })
-        .eq('user_id', user.id);
+        }, {
+          onConflict: 'user_id'
+        });
 
       if (error) throw error;
 
@@ -73,6 +75,11 @@ const Profile = () => {
         title: "Success",
         description: "Profile updated successfully",
       });
+      
+      // Navigate back to dashboard after successful save
+      setTimeout(() => {
+        window.location.href = '/dashboard';
+      }, 1000);
     } catch (error) {
       toast({
         title: "Error",
