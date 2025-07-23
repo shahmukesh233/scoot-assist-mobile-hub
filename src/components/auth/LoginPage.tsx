@@ -79,7 +79,7 @@ const LoginPage = () => {
           
           userId = data.user!.id;
           
-          // Create new profile
+          // Create new profile - but check if one already exists first
           const { error: profileError } = await supabase
             .from('profiles')
             .insert({
@@ -88,7 +88,8 @@ const LoginPage = () => {
               display_name: `User ${phoneNumber.slice(-4)}`,
             });
           
-          if (profileError) {
+          if (profileError && profileError.code !== '23505') {
+            // Ignore duplicate key errors, but log other errors
             console.error('Profile creation error:', profileError);
           }
           
