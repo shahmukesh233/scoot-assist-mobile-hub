@@ -53,34 +53,52 @@ const LoginPage = () => {
       setIsLoading(true);
       
       try {
-        // Create a simulated user session using anonymous auth
-        const { data, error } = await supabase.auth.signInAnonymously();
+        // First, try to find existing user with this phone number
+        const { data: existingProfile } = await supabase
+          .from('profiles')
+          .select('user_id')
+          .eq('mobile_number', phoneNumber)
+          .maybeSingle();
+
+        let userId;
         
-        if (error) throw error;
-        
-        if (data.user) {
-          // Create or update profile for this phone number
+        if (existingProfile) {
+          // Use existing user
+          userId = existingProfile.user_id;
+          
+          // Create anonymous session and update it with existing user ID
+          const { data, error } = await supabase.auth.signInAnonymously();
+          if (error) throw error;
+          
+          // Store the mapping for this session
+          sessionStorage.setItem('actualUserId', userId);
+        } else {
+          // Create new anonymous user
+          const { data, error } = await supabase.auth.signInAnonymously();
+          if (error) throw error;
+          
+          userId = data.user!.id;
+          
+          // Create new profile
           const { error: profileError } = await supabase
             .from('profiles')
-            .upsert({
-              user_id: data.user.id,
+            .insert({
+              user_id: userId,
               mobile_number: phoneNumber,
               display_name: `User ${phoneNumber.slice(-4)}`,
-            }, {
-              onConflict: 'user_id'
             });
           
           if (profileError) {
             console.error('Profile creation error:', profileError);
           }
-          
-          toast({
-            title: "Success",
-            description: "Login successful!",
-          });
-          // Redirect to dashboard
-          window.location.href = '/dashboard';
         }
+        
+        toast({
+          title: "Success",
+          description: "Login successful!",
+        });
+        // Redirect to dashboard
+        window.location.href = '/dashboard';
       } catch (error) {
         console.error('Login error:', error);
         toast({

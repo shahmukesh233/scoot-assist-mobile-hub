@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { ArrowLeft, Save, User } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { getActualUserId } from '@/lib/auth-utils';
 
 const Profile = () => {
   const [displayName, setDisplayName] = useState('');
@@ -20,8 +21,8 @@ const Profile = () => {
 
   const fetchProfile = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
+      const userId = await getActualUserId();
+      if (!userId) {
         window.location.href = '/';
         return;
       }
@@ -29,7 +30,7 @@ const Profile = () => {
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
-        .eq('user_id', user.id)
+        .eq('user_id', userId)
         .maybeSingle();
 
       if (error) {
@@ -55,8 +56,8 @@ const Profile = () => {
   const handleSave = async () => {
     setLoading(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
+      const userId = await getActualUserId();
+      if (!userId) {
         window.location.href = '/';
         return;
       }
@@ -67,7 +68,7 @@ const Profile = () => {
           .from('profiles')
           .select('user_id')
           .eq('mobile_number', mobileNumber)
-          .neq('user_id', user.id)
+          .neq('user_id', userId)
           .maybeSingle();
 
         if (existingProfile) {
@@ -82,13 +83,11 @@ const Profile = () => {
 
       const { error } = await supabase
         .from('profiles')
-        .upsert({
-          user_id: user.id,
+        .update({
           display_name: displayName || null,
           mobile_number: mobileNumber || null,
-        }, {
-          onConflict: 'user_id'
-        });
+        })
+        .eq('user_id', userId);
 
       if (error) {
         console.error('Profile save error:', error);

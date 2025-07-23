@@ -8,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { ArrowLeft, ShoppingCart } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { getActualUserId } from '@/lib/auth-utils';
 
 const scooterModels = [
   { value: 'ms_classic', label: 'MS Classic', price: 1299.99 },
@@ -35,8 +36,8 @@ const NewOrder = () => {
     setLoading(true);
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
+      const userId = await getActualUserId();
+      if (!userId) {
         window.location.href = '/';
         return;
       }
@@ -48,7 +49,7 @@ const NewOrder = () => {
       if (orderNumberError) throw orderNumberError;
 
       const orderData = {
-        customer_id: user.id,
+        customer_id: userId,
         order_number: orderNumberData,
         scooter_model: selectedModel as 'ms_classic' | 'ms_sport' | 'ms_electric' | 'ms_premium',
         quantity: quantity,

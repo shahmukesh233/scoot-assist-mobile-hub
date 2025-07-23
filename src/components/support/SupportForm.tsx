@@ -11,6 +11,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { Upload, ArrowLeft, Send } from 'lucide-react';
+import { getActualUserId } from '@/lib/auth-utils';
 
 const supportFormSchema = z.object({
   title: z.string().min(5, 'Title must be at least 5 characters'),
@@ -93,9 +94,9 @@ const SupportForm = ({ initialQuestion, initialCategory, onBack, onSuccess }: Su
     setIsSubmitting(true);
     
     try {
-      // Get the authenticated user
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
+      // Get the actual user ID
+      const userId = await getActualUserId();
+      if (!userId) {
         toast({
           title: 'Authentication Required',
           description: 'Please log in to submit a support request.',
@@ -108,7 +109,7 @@ const SupportForm = ({ initialQuestion, initialCategory, onBack, onSuccess }: Su
       
       // Upload file if selected
       if (selectedFile) {
-        attachmentUrl = await uploadFile(selectedFile, user.id);
+        attachmentUrl = await uploadFile(selectedFile, userId);
         if (!attachmentUrl) {
           throw new Error('File upload failed');
         }
@@ -118,7 +119,7 @@ const SupportForm = ({ initialQuestion, initialCategory, onBack, onSuccess }: Su
       const { error } = await supabase
         .from('support_tickets')
         .insert({
-          customer_id: user.id,
+          customer_id: userId,
           title: data.title,
           description: data.description,
           category: data.category,

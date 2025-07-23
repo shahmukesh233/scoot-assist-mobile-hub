@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Package, Truck, Clock, CheckCircle, XCircle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { getActualUserId } from '@/lib/auth-utils';
 
 interface Order {
   id: string;
@@ -31,8 +32,8 @@ const Orders = () => {
 
   const fetchOrders = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
+      const userId = await getActualUserId();
+      if (!userId) {
         window.location.href = '/';
         return;
       }
@@ -40,7 +41,7 @@ const Orders = () => {
       const { data, error } = await supabase
         .from('orders')
         .select('*')
-        .eq('customer_id', user.id)
+        .eq('customer_id', userId)
         .order('created_at', { ascending: false });
 
       if (error) throw error;

@@ -6,6 +6,7 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { ArrowLeft, Clock, AlertCircle, CheckCircle, Plus } from 'lucide-react';
 import { format } from 'date-fns';
+import { getActualUserId } from '@/lib/auth-utils';
 
 interface SupportTicket {
   id: string;
@@ -31,8 +32,8 @@ const SupportTickets = () => {
 
   const fetchTickets = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
+      const userId = await getActualUserId();
+      if (!userId) {
         window.location.href = '/';
         return;
       }
@@ -40,7 +41,7 @@ const SupportTickets = () => {
       const { data, error } = await supabase
         .from('support_tickets')
         .select('*')
-        .eq('customer_id', user.id)
+        .eq('customer_id', userId)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
