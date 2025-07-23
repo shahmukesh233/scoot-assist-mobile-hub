@@ -19,30 +19,16 @@ const LoginPage = () => {
     e.preventDefault();
     if (phoneNumber.length >= 10) {
       setIsLoading(true);
-      try {
-        // Use Supabase's phone authentication
-        const { error } = await supabase.auth.signInWithOtp({
-          phone: `+91${phoneNumber}`,
-        });
-
-        if (error) {
-          throw error;
-        }
-        
+      
+      // Simulate OTP sending with a delay
+      setTimeout(() => {
         toast({
           title: "OTP Sent",
           description: "Please check your mobile for the verification code",
         });
         setStep('otp');
-      } catch (error) {
-        toast({
-          title: "Error", 
-          description: "Failed to send OTP. Please try again.",
-          variant: "destructive",
-        });
-      } finally {
         setIsLoading(false);
-      }
+      }, 1000);
     }
   };
 
@@ -65,35 +51,17 @@ const LoginPage = () => {
     const otpString = otp.join('');
     if (otpString.length === 6) {
       setIsLoading(true);
-      try {
-        // Use Supabase's phone authentication
-        const { data, error } = await supabase.auth.verifyOtp({
-          phone: `+91${phoneNumber}`,
-          token: otpString,
-          type: 'sms'
-        });
-
-        if (error) {
-          throw error;
-        }
-
-        if (data.user) {
-          toast({
-            title: "Success",
-            description: "Login successful!",
-          });
-          // Redirect to dashboard
-          window.location.href = '/dashboard';
-        }
-      } catch (error) {
+      
+      // Simulate OTP verification with a delay
+      setTimeout(() => {
         toast({
-          title: "Error",
-          description: "Invalid OTP. Please try again.",
-          variant: "destructive",
+          title: "Success",
+          description: "Login successful!",
         });
-      } finally {
+        // Redirect to dashboard
+        window.location.href = '/dashboard';
         setIsLoading(false);
-      }
+      }, 1500);
     }
   };
 
@@ -225,31 +193,17 @@ const LoginPage = () => {
                   <Button 
                     variant="link" 
                     className="text-sm text-muted-foreground"
-                    onClick={async () => {
+                    onClick={() => {
                       setIsLoading(true);
-                      try {
-                        // Resend OTP using Supabase
-                        const { error } = await supabase.auth.signInWithOtp({
-                          phone: `+91${phoneNumber}`,
-                        });
-
-                        if (error) {
-                          throw error;
-                        }
-                        
+                      
+                      // Simulate resending OTP with a delay
+                      setTimeout(() => {
                         toast({
                           title: "OTP Resent",
                           description: "Please check your mobile for the new verification code",
                         });
-                      } catch (error) {
-                        toast({
-                          title: "Error",
-                          description: "Failed to resend OTP. Please try again.",
-                          variant: "destructive",
-                        });
-                      } finally {
                         setIsLoading(false);
-                      }
+                      }, 1000);
                     }}
                   >
                     Didn't receive? Resend OTP
