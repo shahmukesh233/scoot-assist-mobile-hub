@@ -36,16 +36,12 @@ const NewOrder = () => {
     setLoading(true);
 
     try {
-      const userId = await getActualUserId();
-      console.log('User ID for order:', userId);
-      
-      // Also get current auth user for comparison
+      // Get current authenticated user for RLS policy compliance
       const { data: { user } } = await supabase.auth.getUser();
-      console.log('Current auth user:', user?.id);
       
-      if (!userId) {
+      if (!user) {
         toast({
-          title: "Authentication Error",
+          title: "Authentication Error", 
           description: "Please log in again to place an order.",
           variant: "destructive",
         });
@@ -60,7 +56,7 @@ const NewOrder = () => {
       if (orderNumberError) throw orderNumberError;
 
       const orderData = {
-        customer_id: userId,
+        customer_id: user.id, // Use current auth user ID for RLS compliance
         order_number: orderNumberData,
         scooter_model: selectedModel as 'ms_classic' | 'ms_sport' | 'ms_electric' | 'ms_premium',
         quantity: quantity,
