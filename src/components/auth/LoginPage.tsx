@@ -52,16 +52,45 @@ const LoginPage = () => {
     if (otpString.length === 6) {
       setIsLoading(true);
       
-      // Simulate OTP verification with a delay
-      setTimeout(() => {
+      try {
+        // Create a simulated user session using anonymous auth
+        const { data, error } = await supabase.auth.signInAnonymously();
+        
+        if (error) throw error;
+        
+        if (data.user) {
+          // Create or update profile for this phone number
+          const { error: profileError } = await supabase
+            .from('profiles')
+            .upsert({
+              user_id: data.user.id,
+              mobile_number: phoneNumber,
+              display_name: `User ${phoneNumber.slice(-4)}`,
+            }, {
+              onConflict: 'user_id'
+            });
+          
+          if (profileError) {
+            console.error('Profile creation error:', profileError);
+          }
+          
+          toast({
+            title: "Success",
+            description: "Login successful!",
+          });
+          // Redirect to dashboard
+          window.location.href = '/dashboard';
+        }
+      } catch (error) {
+        console.error('Login error:', error);
         toast({
-          title: "Success",
-          description: "Login successful!",
+          title: "Error",
+          description: "Login failed. Please try again.",
+          variant: "destructive",
         });
-        // Redirect to dashboard
-        window.location.href = '/dashboard';
+      } finally {
         setIsLoading(false);
-      }, 1500);
+      }
     }
   };
 
