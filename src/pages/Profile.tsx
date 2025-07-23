@@ -30,9 +30,10 @@ const Profile = () => {
         .from('profiles')
         .select('*')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
 
-      if (error && error.code !== 'PGRST116') {
+      if (error) {
+        console.error('Profile fetch error:', error);
         throw error;
       }
 
@@ -42,6 +43,7 @@ const Profile = () => {
         setMobileNumber(data.mobile_number || '');
       }
     } catch (error) {
+      console.error('Error in fetchProfile:', error);
       toast({
         title: "Error",
         description: "Failed to load profile data",
@@ -59,17 +61,39 @@ const Profile = () => {
         return;
       }
 
+      // First check if mobile number is already used by another user
+      if (mobileNumber) {
+        const { data: existingProfile } = await supabase
+          .from('profiles')
+          .select('user_id')
+          .eq('mobile_number', mobileNumber)
+          .neq('user_id', user.id)
+          .maybeSingle();
+
+        if (existingProfile) {
+          toast({
+            title: "Error",
+            description: "This mobile number is already registered to another account",
+            variant: "destructive",
+          });
+          return;
+        }
+      }
+
       const { error } = await supabase
         .from('profiles')
         .upsert({
           user_id: user.id,
-          display_name: displayName,
-          mobile_number: mobileNumber,
+          display_name: displayName || null,
+          mobile_number: mobileNumber || null,
         }, {
           onConflict: 'user_id'
         });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Profile save error:', error);
+        throw error;
+      }
 
       toast({
         title: "Success",
@@ -81,9 +105,10 @@ const Profile = () => {
         window.location.href = '/dashboard';
       }, 1000);
     } catch (error) {
+      console.error('Error in handleSave:', error);
       toast({
         title: "Error",
-        description: "Failed to update profile",
+        description: error.message || "Failed to update profile",
         variant: "destructive",
       });
     } finally {
