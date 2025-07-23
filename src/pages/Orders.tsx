@@ -32,8 +32,9 @@ const Orders = () => {
 
   const fetchOrders = async () => {
     try {
-      const userId = await getActualUserId();
-      if (!userId) {
+      // Get current authenticated user for consistency with order creation
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
         window.location.href = '/';
         return;
       }
@@ -41,7 +42,7 @@ const Orders = () => {
       const { data, error } = await supabase
         .from('orders')
         .select('*')
-        .eq('customer_id', userId)
+        .eq('customer_id', user.id)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
