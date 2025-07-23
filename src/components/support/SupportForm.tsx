@@ -93,15 +93,22 @@ const SupportForm = ({ initialQuestion, initialCategory, onBack, onSuccess }: Su
     setIsSubmitting(true);
     
     try {
-      // Generate a proper UUID for demo purposes
-      // In a real app, this would come from the authenticated user
-      const mockCustomerId = crypto.randomUUID();
+      // Get the authenticated user
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast({
+          title: 'Authentication Required',
+          description: 'Please log in to submit a support request.',
+          variant: 'destructive',
+        });
+        return;
+      }
       
       let attachmentUrl = null;
       
       // Upload file if selected
       if (selectedFile) {
-        attachmentUrl = await uploadFile(selectedFile, mockCustomerId);
+        attachmentUrl = await uploadFile(selectedFile, user.id);
         if (!attachmentUrl) {
           throw new Error('File upload failed');
         }
@@ -111,7 +118,7 @@ const SupportForm = ({ initialQuestion, initialCategory, onBack, onSuccess }: Su
       const { error } = await supabase
         .from('support_tickets')
         .insert({
-          customer_id: mockCustomerId,
+          customer_id: user.id,
           title: data.title,
           description: data.description,
           category: data.category,
