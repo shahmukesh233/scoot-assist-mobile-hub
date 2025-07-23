@@ -37,7 +37,18 @@ const NewOrder = () => {
 
     try {
       const userId = await getActualUserId();
+      console.log('User ID for order:', userId);
+      
+      // Also get current auth user for comparison
+      const { data: { user } } = await supabase.auth.getUser();
+      console.log('Current auth user:', user?.id);
+      
       if (!userId) {
+        toast({
+          title: "Authentication Error",
+          description: "Please log in again to place an order.",
+          variant: "destructive",
+        });
         window.location.href = '/';
         return;
       }
