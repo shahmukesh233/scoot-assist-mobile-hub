@@ -70,8 +70,9 @@ const LoginPage = () => {
           const { data, error } = await supabase.auth.signInAnonymously();
           if (error) throw error;
           
-          // Store the mapping for this session
+          // Store the mapping persistently
           sessionStorage.setItem('actualUserId', userId);
+          localStorage.setItem('phoneToUserId', JSON.stringify({ [phoneNumber]: userId }));
         } else {
           // Create new anonymous user
           const { data, error } = await supabase.auth.signInAnonymously();
@@ -91,6 +92,9 @@ const LoginPage = () => {
           if (profileError) {
             console.error('Profile creation error:', profileError);
           }
+          
+          // Store the mapping for new users too
+          localStorage.setItem('phoneToUserId', JSON.stringify({ [phoneNumber]: userId }));
         }
         
         toast({

@@ -1,9 +1,18 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { User, Settings, LogOut, Package, ShoppingCart } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
 const Dashboard = () => {
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    // Clear the user mapping and auth state
+    localStorage.removeItem('phoneToUserId');
+    sessionStorage.removeItem('actualUserId');
+    
+    // Sign out from Supabase
+    await supabase.auth.signOut();
+    
+    // Redirect to home
     window.location.href = '/';
   };
 
