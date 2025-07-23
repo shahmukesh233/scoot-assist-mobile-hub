@@ -63,14 +63,13 @@ const LoginPage = () => {
         let userId;
         
         if (existingProfile) {
-          // Use existing user
-          userId = existingProfile.user_id;
-          
-          // Create anonymous session and update it with existing user ID
+          // Use existing user - create a new anonymous session but map it to existing data
           const { data, error } = await supabase.auth.signInAnonymously();
           if (error) throw error;
           
-          // Store the mapping persistently
+          userId = existingProfile.user_id; // Use the existing user ID for data queries
+          
+          // Store the mapping persistently - map phone number to the EXISTING user ID
           sessionStorage.setItem('actualUserId', userId);
           localStorage.setItem('phoneToUserId', JSON.stringify({ [phoneNumber]: userId }));
         } else {
